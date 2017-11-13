@@ -4,7 +4,6 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import com.romanvoloboev.actors.DigitsActor;
 import com.romanvoloboev.actors.PrintActor;
-import com.romanvoloboev.actors.msg.RandomDigitsGenerator;
 
 public class App {
 
@@ -13,7 +12,9 @@ public class App {
     public static void main(String[] args) {
         ActorRef printActor = system.actorOf(PrintActor.props());
         ActorRef digitsActor = system.actorOf(DigitsActor.props(printActor));
-        digitsActor.tell(new RandomDigitsGenerator(100, 200), ActorRef.noSender());
+        for (int i = 0; i< 100; i++) {
+            digitsActor.tell(new DigitsActor.RandomDigitsGenerator(2+i, 200), ActorRef.noSender());
+        }
 
     }
 }

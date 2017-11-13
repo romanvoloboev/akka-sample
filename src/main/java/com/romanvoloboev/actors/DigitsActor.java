@@ -5,8 +5,9 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.romanvoloboev.actors.msg.DigitMsg;
-import com.romanvoloboev.actors.msg.RandomDigitsGenerator;
+
+import java.util.PrimitiveIterator;
+import java.util.Random;
 
 /**
  * Created at 10.11.17
@@ -21,7 +22,19 @@ public class DigitsActor extends AbstractActor {
         return Props.create(DigitsActor.class, () -> new DigitsActor(printActor));
     }
 
-    private DigitsActor(ActorRef printActor) {
+    public static class RandomDigitsGenerator {
+        private PrimitiveIterator.OfInt randomIterator;
+
+        public RandomDigitsGenerator(int min, int max) {
+            randomIterator = new Random().ints(min, max + 1).iterator();
+        }
+
+        public int nextInt() {
+            return randomIterator.nextInt();
+        }
+    }
+
+    public DigitsActor(ActorRef printActor) {
         this.printActor = printActor;
     }
 
@@ -29,8 +42,7 @@ public class DigitsActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(RandomDigitsGenerator.class, randomDigitsGenerator -> {
-
-                    printActor.tell(new DigitMsg(randomDigitsGenerator.nextInt()), getSelf());
+                    printActor.tell(new PrintActor.DigitMsg(randomDigitsGenerator.nextInt()), getSelf());
                 }).build();
     }
 
